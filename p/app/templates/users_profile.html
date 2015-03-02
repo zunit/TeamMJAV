@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+(% block content %)
+
+{% block content %}
+ <div class="container">
+<h1>User Profile</h1>
+<br>
+<p>Your username: {{ u.username }} </p>
+<p>Your email address: {{ u.email }}</p>
+<p>Want to reset your password? Click<a href="{{ url_for('reset_pwd') }}">Reset</a> to do it</p>
+
+
+
+		{% for product in products %}
+			
+			{% include 'products.html' %}
+{% else %}
+	<p><em>You are not selling anything. Click <a href="{{ url_for('add_products') }}">Add Products</a> to start now!</em><p>
+{% endfor %}
+
+</div>
+{% endblock %}
+
+
+(% endblock %)

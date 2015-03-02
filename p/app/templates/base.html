@@ -1,0 +1,451 @@
+{% from "_formhelpers.html" import render_field %}
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="icon" href="../../favicon.ico">
+      <!--loginbutton -->
+      <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"/>
+      <link type="text/css" rel="stylesheet" href="../static/style.css" />
+      <!--begin -->
+      <title>
+         Welcome to E-Liquid!
+      </title>
+      <link type="text/css" rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+      <!-- Bootstrap core CSS -->
+      <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+      <!--[if lt IE 9]>
+      <script src="../../assets/js/ie8-responsive-file-warning.js"></script>
+      <![endif]-->
+      <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+      <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+      <!-- Custom styles for this template -->
+      <link href="carousel.css" rel="stylesheet">
+   </head>
+   <!-- NAVBAR
+      ================================================== -->
+   <body>
+      <div class="navbar-wrapper">
+         <div class="container">
+            <nav class="navbar navbar-inverse navbar-static-top">
+               <div class="container">
+                  <div class="navbar-header">
+                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                     <span class="sr-only">
+                     Toggle navigation
+                     </span>
+                     <span class="icon-bar">
+                     </span>
+                     <span class="icon-bar">
+                     </span>
+                     <span class="icon-bar">
+                     </span>
+                     </button>
+                  </div>
+                  <div id="navbar" class="navbar-collapse collapse">
+                     <ul class="nav navbar-nav">
+                     <li>
+                        <a href="/">
+                        {{ title }}
+                        </a>
+                     </li>
+                     <li>
+                        <a href="/aboutus">
+                        About
+                        </a>
+                     </li>
+                     <li>
+                        <a href="/checkout">
+                        Checkout
+                        </a>
+                     </li>
+                     <li>
+                        <form class="navbar-form" action="{{ url_for('search') }}" method="post" placeholder="Search" name="search">{{ g.search_form.hidden_tag() }}{{ g.search_form.search(size=25) }}
+                           <button class="btn btn-default" type="submit" value="Search">
+                           <i class="glyphicon glyphicon-search">
+                           </i>
+                           </button>
+                        </form>
+                     </li>
+                     {% if not g.user.is_authenticated() %}
+                     <li class="login">
+                        <a id="modal_triagger" data-toggle="modal" href="#myModal" style="color:#358AD0">
+                        Login/Register
+                        </a>
+                     </li>
+                     {% else %}
+                     <li class="dropdown">
+                    
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                        <img src="../static/img/user.png" alt="" height="20" width="20">{{ g.user.username }}
+                        
+                        <span class="caret">
+                        </span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                           <li>
+                              <a href="/logout">Logout</a>
+                           </li>
+                           <li>
+                              <a href="{{ url_for('user', username=g.user.username) }}">Profile</a>
+                           </li>
+                           <li class="divider">
+                              </li>
+                              <li class="dropdown-header">
+                              Products
+                              </li>
+                              <li>
+                              <a href="{{ url_for('add_products') }}">
+                              Add Products
+                              </a>
+                              </li>
+                              <li>
+                              <a href="#">
+                              Recent Purchase History
+                              </a>
+                              </li>
+                              </ul>
+                              </li>
+                           {% endif %}
+                           <!--DROPDOWN MENU             
+                              <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                              Dropdown 
+                              <span class="caret">
+                              </span>
+                              </a>
+                              <ul class="dropdown-menu" role="menu">
+                              <li>
+                              <a href="#">
+                              Action
+                              </a>
+                              </li>
+                              <li>
+                              <a href="#">
+                              Another action
+                              </a>
+                              </li>
+                              <li>
+                              <a href="#">
+                              Something else here
+                              </a>
+                              </li>
+                              <li class="divider">
+                              </li>
+                              <li class="dropdown-header">
+                              Nav header
+                              </li>
+                              <li>
+                              <a href="#">
+                              Separated link
+                              </a>
+                              </li>
+                              <li>
+                              <a href="#">
+                              One more separated link
+                              </a>
+                              </li>
+                              </ul>
+                              </li>
+                              DROPDOWN-->
+                        </ul>
+                  </div>
+               </div>
+            </nav>
+         </div>
+      </div>
+      <!-- Modal -->
+      <div class="modal fade in" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">
+      &times;
+      </span>
+      </button>
+      <h4 class="modal-title" id="myModalLabel">
+      Login
+      </h4>
+      </div>
+      <div class="modal-body">
+      <div class="social_login">
+      <div class="clearfix">
+      <a class="social_box fb" href="#">
+      <span class="icon">
+      <i class="fa fa-facebook">
+      </i>
+      </span>
+      <span class="icon_title">
+      Connect with
+      Facebook
+      </span>
+      </a>
+      <a class="social_box google" href="#">
+      <span class="icon">
+      <i class="fa fa-google-plus">
+      </i>
+      </span>
+      <span class="icon_title">
+      Connect with Google
+      </span>
+      </a>
+      </div>
+      <div class="centeredText">
+      <span>
+      Or use your Username/Email
+      </span>
+      </div>
+      <div class="action_btns">
+      <div class="one_half">
+      <a class="btn" href="#" id="login_form" name="login_form">
+      Login
+      </a>
+      </div>
+      <div class="one_half last">
+      <a class="btn" href="#" id="register_form" name=
+         "register_form">
+      Sign up
+      </a>
+      </div>
+      </div>
+      </div>
+      <div class="user_login">
+      <form method=post action="/login">
+      {{ render_field(g.login_form.username_or_email) }}
+      <br>
+      {{ render_field(g.login_form.password) }}
+      {{ g.login_form.csrf_token }}
+      <br>			
+      <div class="checkbox">
+      <label for="remember">
+      <input type="checkbox"> {{ g.login_form.remember_me }}Remember Me
+      </label>
+      </div>
+      <div class="action_btns">
+      <div class="one_half">
+      <a class="btn back_btn" href="#">
+      Back
+      </a>
+      </div>
+      <div class="one_half last">
+      <input type="submit" value="Login" class="btn btn_red btn-success">
+      </div>
+      </div>
+      </form>
+      <a class="forgot_password" href="/forget">
+      Forgot password?
+      </a>
+      </div>
+      <div class="user_register">
+      <form method=post action="/register">
+      {{ render_field(g.form.username) }}
+      <br>
+      {{ render_field(g.form.email) }}
+      <br>
+      {{ render_field(g.form.password) }}
+      <br>
+      {{ render_field(g.form.confirm) }}
+      <br>
+      <!--                 {{ g.form.recaptcha }} -->
+      {{ g.form.csrf_token }}
+      <br>
+      <div class="action_btns">
+      <div class="one_half">
+      <a class="btn back_btn" href="#">
+      Back
+      </a>
+      </div>
+      <div class="one_half last">
+      <input type="submit" value="Sign Up" class="btn btn_red btn-success">
+      <!--  <a class="btn btn_red" href="#"> -->
+      <!-- 
+         <button type="submit"  class="btn btn_red btn-success"">
+                          
+                 				Register</button>
+         -->
+      </div>
+      </div>
+      </form>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <script type="text/javascript">
+         $(function () {
+         // Calling Login Form
+           $("#login_form").click(function () {
+             $(".social_login").hide();
+             $(".user_login").show();
+             return false;
+           }
+                                 );
+           
+           // Calling Register Form
+           $("#register_form").click(function () {
+             $(".social_login").hide();
+             $(".user_register").show();
+             $(".header_title").text('Register');
+             return false;
+           }
+                                    );
+           
+           // Going back to Social Forms
+           $(".back_btn").click(function () {
+             $(".user_login").hide();
+             $(".user_register").hide();
+             $(".social_login").show();
+             $(".header_title").text('Login');
+             return false;
+           }
+                               );
+           
+         }
+          )
+          
+      </script>
+      {#
+      {% if reg_errors is defined %} 
+      <script type="text/javascript">
+         $(window).load(function() {
+         	
+         	$("#myModal").show();
+         	$(".social_login").hide();
+                	$(".user_register").show();
+                 	$(".header_title").text('Register');
+         });
+         
+      </script>
+      {% endif %} 
+      {% if login_errors is defined %} 
+      <script type="text/javascript">
+         $(window).load(function() {
+         	
+         	$("#myModal").show();
+         
+                 $(".social_login").hide();
+                 $(".user_login").show();
+                 $(".head_title").text('Login');
+         });
+         
+      </script>
+      {% endif %}
+      #}
+            <div class="container">
+			
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+				
+				{% for category, message in messages %}
+				 
+				  
+				  <div class="alert alert-{{ category }}">
+							<button type="button" class="close" data-dismiss="alert">&times;</button>
+							{{ message }}
+				</div>
+				  
+				{% endfor %}
+			
+			  {% endif %}
+			{% endwith %}
+    
+    
+    
+
+</div>
+      
+      {% block content %}
+      	
+
+      {% endblock %}
+      <!-- FOOTER -->
+      <footer>
+      <hr>
+      <p class="pull-right">
+      <a href="#">
+      Back to top
+      </a>
+      </p>
+      <p>
+      &copy; 2015 Forest Hill Coders, Inc. &middot; 
+      <a href="/aboutus">
+      About Us
+      </a>
+      &middot; 
+      <a href="#">
+      Privacy
+      </a>
+      &middot; 
+      <a href="#">
+      Terms
+      </a>
+      </p>
+      </footer>
+      </div>
+      <!-- /.container -->
+      <!-- Bootstrap core JavaScript
+         ================================================== -->
+      <!--  
+         <script type="text/javascript">
+         $("#modal_trigger").leanModal({
+              top : 200, overlay : 0.6, closeButton: ".modal_close" }
+                                         );
+            
+            $(function(){
+              // Calling Login Form
+              $("#login_form").click(function(){
+                $(".social_login").hide();
+                $(".user_login").show();
+                return false;
+              }
+                                    );
+                
+                // Calling Register Form
+                $("#register_form").click(function(){
+                  $(".social_login").hide();
+                  $(".user_register").show();
+                  $(".header_title").text('Register');
+                  return false;
+                }
+                                         );
+                
+                // Going back to Social Forms
+                $(".back_btn").click(function(){
+                  $(".user_login").hide();
+                  $(".user_register").hide();
+                  $(".social_login").show();
+                  $(".header_title").text('Login');
+                  return false;
+                }
+                                    );
+                
+              }
+               )
+          </script>
+         -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+      <script src="../../dist/js/bootstrap.min.js"></script>
+      <script src="../../assets/js/docs.min.js"></script>
+      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+      <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+      <script src="../static/jquery.leanModal.min.js"></script>
+      <script src="../static/jquery-1.11.0.min.js"></script>
+      <!-- 
+         <script type=text/javascript src={{ url_for('static', filename='jquery.leanModal.min.js')}}></script>
+         <script type=text/javascript src={{ url_for('static', filename='jquery-1.11.0.min.js')}}></script>
+         -->
+   </body>
+</html>

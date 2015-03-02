@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class = "container">
+      <form method=post action="/reset_email">
+      {{ render_field(g.reset_email_form.password) }}
+      <br>
+      {{ render_field(g.reset_email_form.new_email) }}
+      <br>
+     
+      {{ g.reset_email_form.csrf_token }}
+      <br>
+      
+      
+      <input type="submit" value="Reset" class="btn btn_red btn-success">
+      
+      </div>
+      </form>
+
+{% endblock %}

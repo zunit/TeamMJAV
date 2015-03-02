@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class = "container">
+      <form method=post action="/reset_pwd">
+      {{ render_field(g.reset_pwd_form.old_password) }}
+      <br>
+      {{ render_field(g.reset_pwd_form.new_password) }}
+      <br>
+      {{ render_field(g.reset_pwd_form.confirm) }}
+      <br>
+      <!--                 {{ g.form.recaptcha }} -->
+      {{ g.reset_pwd_form.csrf_token }}
+      <br>
+      
+      <button value="Back" href="/users_profile"></button>
+      
+      <input type="submit" value="Reset" class="btn btn_red btn-success">
+      
+      </div>
+      </form>
+
+{% endblock %}

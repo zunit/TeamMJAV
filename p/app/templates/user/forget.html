@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+ <div class="container">
+	<h1>Forgot Your Password?</h1>
+	<br>
+	 <form method=post action="/forget">
+              	{{ render_field(g.forget_form.email) }}
+              	{{ g.forget_form.csrf_token }} <input type="submit" value="Submit" class="btn btn_red btn-success">
+                </form>
+    
+               <br>
+	<p>Enter your email address to receive a temporary password.</p>
+	<!-- Add flash() -->
+</div>
+{% endblock %}
