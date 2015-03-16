@@ -5,6 +5,28 @@
 {% block content %}
  <div class="container">
 	<h1>Time to Start Selling</h1>
-
+	
+	 <form method=post action="/add_products">
+	 
+      {{ render_field(g.add_prod_form.p_name) }}
+      <br>
+      {{ render_field(g.add_prod_form.p_price) }}
+      <br>
+      <b>Description</b><br>
+      {{ g.add_prod_form.p_descr(cols="100", rows="15") }}
+      <br>
+      {{ render_field(g.add_prod_form.p_picture) }}
+      <br>
+      {{ render_field(g.add_prod_form.p_size) }}
+      <br>
+      {{ render_field(g.add_prod_form.p_stock) }}
+      {{ g.add_prod_form.csrf_token }}
+      <br>	
+      
+      
+      <a class="btn back_btn" href="#"> Back </a>	
+      <input type="submit" value=" Add " class="btn btn_red btn-success">
+      
+      </form>
 </div>
 {% endblock %}

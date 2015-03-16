@@ -10,7 +10,7 @@
       <link rel="icon" href="../../favicon.ico">
       <!--loginbutton -->
       <link type="text/css" rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"/>
-      <link type="text/css" rel="stylesheet" href="../static/style.css" />
+      <link rel="stylesheet" href="../static/style.css" />
       <!--begin -->
       <title>
          Welcome to E-Liquid!
@@ -32,6 +32,33 @@
       <![endif]-->
       <!-- Custom styles for this template -->
       <link href="carousel.css" rel="stylesheet">
+      <style type="text/css" media="screen">
+    form article label {
+      display: block;
+      margin: 5px;
+    }
+
+    form .submit {
+      margin: 15px 0;
+    }
+    
+   /* -------------------- Select Box Styles: stackoverflow.com Method */
+/* -------------------- Source: http://stackoverflow.com/a/5809186 */
+select#soflow, select#soflow-color {
+   -webkit-appearance: button;
+   background-image: url(http://i62.tinypic.com/15xvbd5.png), -webkit-linear-gradient(#FAFAFA, #F4F4F4 40%, #E5E5E5);
+   background-position: 97% center;
+   background-repeat: no-repeat;
+   border: 1px solid #AAA;
+   color: #555;
+   font-size: inherit;
+   overflow: hidden;
+   padding: 5px 10px;
+
+}
+
+
+  </style>
    </head>
    <!-- NAVBAR
       ================================================== -->
@@ -70,14 +97,32 @@
                         Checkout
                         </a>
                      </li>
-                     <li>
+                    <!--- <li>
+                     	
                         <form class="navbar-form" action="{{ url_for('search') }}" method="post" placeholder="Search" name="search">{{ g.search_form.hidden_tag() }}{{ g.search_form.search(size=25) }}
                            <button class="btn btn-default" type="submit" value="Search">
                            <i class="glyphicon glyphicon-search">
                            </i>
                            </button>
                         </form>
-                     </li>
+                        </li>--->
+<li>
+
+
+      <form class="navbar-form" action="{{ url_for('search') }}" method="post">{{ g.search_form.hidden_tag() }}{{ g.search_form.search(type="text", placeholder="Search...", class="form-control", size=15) }}
+              <select id="soflow" name="filter">
+        <option id="User" value="User">User</option>
+        <option id="Product" value="Product">Product</option>        
+    </select>  
+        <button class="bt btn-default" type="submit">
+                           <i class="glyphicon glyphicon-search">
+                           </i>
+                           </button>
+                        </form>
+
+  </li>
+                     
+                     
                      {% if not g.user.is_authenticated() %}
                      <li class="login">
                         <a id="modal_triagger" data-toggle="modal" href="#myModal" style="color:#358AD0">
@@ -118,53 +163,14 @@
                               </ul>
                               </li>
                            {% endif %}
-                           <!--DROPDOWN MENU             
-                              <li class="dropdown">
-                              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                              Dropdown 
-                              <span class="caret">
-                              </span>
-                              </a>
-                              <ul class="dropdown-menu" role="menu">
-                              <li>
-                              <a href="#">
-                              Action
-                              </a>
-                              </li>
-                              <li>
-                              <a href="#">
-                              Another action
-                              </a>
-                              </li>
-                              <li>
-                              <a href="#">
-                              Something else here
-                              </a>
-                              </li>
-                              <li class="divider">
-                              </li>
-                              <li class="dropdown-header">
-                              Nav header
-                              </li>
-                              <li>
-                              <a href="#">
-                              Separated link
-                              </a>
-                              </li>
-                              <li>
-                              <a href="#">
-                              One more separated link
-                              </a>
-                              </li>
-                              </ul>
-                              </li>
-                              DROPDOWN-->
                         </ul>
                   </div>
                </div>
             </nav>
          </div>
       </div>
+      
+           
       <!-- Modal -->
       <div class="modal fade in" id="myModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -284,6 +290,9 @@
       </div>
       </div>
       <script type="text/javascript">
+      
+      
+      
          $(function () {
          // Calling Login Form
            $("#login_form").click(function () {
@@ -301,6 +310,8 @@
              return false;
            }
                                     );
+                                    
+
            
            // Going back to Social Forms
            $(".back_btn").click(function () {

@@ -1,4 +1,5 @@
 import os
+import stripe
 basedir = os.path.abspath(os.path.dirname(__file__))
 #first name: eliquid / last name: admin
 
@@ -23,6 +24,13 @@ MAIL_PASSWORD = password
 
 # mail accounts
 MAIL_DEFAULT_SENDER = email
+
+stripe_keys = {
+    'secret_key': 'sk_test_BQokikJOvBiI2HlWgH4olfQ2',
+    'publishable_key': 'pk_test_6pRNASCoBOKtIshFeQd4XMUh'
+}
+
+stripe.api_key = stripe_keys['secret_key']
     
     
 

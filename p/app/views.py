@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid
+from app import app, db, lm, oid, lm, mail
 from .forms import LoginForm
-from forms import SearchForm, RegistrationForm, ForgetForm, ResetPasswordForm, ResetEmailForm
+from forms import SearchForm, RegistrationForm, ForgetForm, AddProdForm, ResetPasswordForm, ResetEmailForm, ContactForm
 from .models import User, Products
 from config import MAX_SEARCH_RESULTS
 from flask.ext import admin
@@ -10,9 +10,10 @@ from flask.ext.admin.contrib import sqla
 from flask.ext.admin import helpers, expose
 from token import generate_confirmation_token, confirm_token
 import datetime
+from flask.ext.mail import Message, Mail
 from email import send_email
 from decorators import check_confirmed
-import os, random, string
+import os, random, string, stripe
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -31,6 +32,7 @@ def before_request():
     g.forget_form = ForgetForm()
     g.reset_pwd_form = ResetPasswordForm()
     g.reset_email_form = ResetEmailForm()
+    g.add_prod_form = AddProdForm()
     # if g.user.is_authenticated():
 #         g.user.last_seen = datetime.utcnow()
 #         db.session.add(g.user)
@@ -39,12 +41,6 @@ def before_request():
 
 
 @app.route('/')
-@app.route('/add_products')
-@login_required
-def add_products():
-	title = 'WELCOME ' + g.user.username + '!'
-	return render_template("products/add_products.html", title=title)
-
 @app.route('/index')
 def index():
 	
@@ -120,16 +116,22 @@ def logout():
 @app.route('/search', methods=['POST'])
 # @login_required
 def search():
-    if not g.search_form.validate_on_submit():
-        return redirect(url_for('index'))
-    return redirect(url_for('search_results', query=g.search_form.search.data))
+	filter = request.form['filter']
+	if not g.search_form.validate_on_submit():
+		return redirect(url_for('index'))
+	return redirect(url_for('search_results', query=g.search_form.search.data, filter=filter))
 
-@app.route('/search_results/<query>')
+@app.route('/search_results/<filter>/<query>')
 # @login_required
-def search_results(query):
+def search_results(query, filter):
 	_query = '*' + query + '*'
-	p_results = Products.query.whoosh_search(_query, MAX_SEARCH_RESULTS).all()
-	u_results = User.query.whoosh_search(_query, MAX_SEARCH_RESULTS).all()
+	if filter == 'User':
+		p_results = []
+		u_results = User.query.whoosh_search(_query, MAX_SEARCH_RESULTS).all()
+	elif filter == 'Product':
+		u_results = []
+		p_results = Products.query.whoosh_search(_query, MAX_SEARCH_RESULTS).all()
+	#u_results = User.query.whoosh_search(_query, MAX_SEARCH_RESULTS).all()
 	return render_template('search_results.html', query=query, presults=p_results, uresults=u_results)
 
 @app.route('/user/<username>')
@@ -154,7 +156,7 @@ def register():
 		html = render_template('user/activate.html', confirm_url=confirm_url)
 		subject = "Please confirm your email"
 		send_email(user.email, subject, html)
-		flash('You have signed up successfully!', 'success')
+		flash('You have signed up successfully! Check your mail box for a confirmation email.', 'success')
 		return redirect(url_for('index'))
 	elif request.method == 'POST' and g.form.validate_on_submit() == False:
 		flash(u'Looks like you type something wrong, please try again!', 'warning')
@@ -245,4 +247,77 @@ def reset_email():
 
 @app.route('/checkout')
 def checkout():
-	return render_template("checkout.php")    
+	return render_template("checkout.php")
+
+@app.route('/products/<p_name>')
+def products(p_name):
+	p = Products.query.filter_by(p_name=p_name).first()
+	return render_template("products/single_product.html", p=p) 
+
+	   
+@app.route('/add_products', methods=['GET', 'POST'])
+@login_required
+def add_products():
+	title = 'WELCOME ' + g.user.username + '!'
+	if request.method == 'POST' and g.add_prod_form.validate_on_submit() != False:
+		u = User.query.filter_by(username=g.user.username).first()
+		p = Products(p_name=g.add_prod_form.p_name.data, p_price=g.add_prod_form.p_price.data, p_descr=g.add_prod_form.p_descr.data, p_picture=g.add_prod_form.p_picture.data, p_size=g.add_prod_form.p_size.data, p_stock=g.add_prod_form.p_stock.data, users=u)
+		print 'u finish adding product'
+		u = User.query.filter_by(username=g.user.username).first()
+		db.session.add(p)
+		db.session.commit()
+		html = render_template('products/new_products.html', p=p)
+		subject = "You have added a new product"
+		send_email(current_user.email, subject, html)
+		flash('You have added a product successfully! Check your mail box for a confirmation email.', 'success')
+		return redirect(url_for('index'))
+	elif request.method == 'POST' and g.form.validate_on_submit() == False:
+		flash(u'Looks like you type something wrong, please try again!', 'warning')
+		return render_template('products/add_products.html', reg_errors=g.form.errors)
+
+	
+	return render_template("products/add_products.html", title=title)
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+  form = ContactForm()
+ 
+  if request.method == 'POST':
+    if form.validate() == False:
+      flash('All fields are required.')
+      return render_template('contact.html', form=form)
+    else:
+    	msg = Message(form.subject.data, sender='welcome.eliquid@gmail.com', recipients=['welcome.eliquid@gmail.com'])
+    	msg.body = """
+    	From: %s &lt;%s&gt;
+    	%s
+    	""" % (form.name.data, form.email.data, form.message.data)
+    	mail.send(msg)
+    	return render_template('contact.html', success=True)
+ 
+  elif request.method == 'GET':
+    return render_template('contact.html', form=form)
+
+@app.route('/charge', methods=['POST'])
+def charge():
+    # Amount in cents
+    amount = 500
+
+    customer = stripe.Customer.create(
+        email=request.form['stripeEmail'],
+        card=request.form['stripeToken']
+    )
+
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='usd',
+        description='Flask Charge',
+        receipt_email=request.form['stripeEmail'],
+    
+    )
+    
+    print customer
+    print charge
+
+    return render_template('charge.html', amount=amount)

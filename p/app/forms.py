@@ -1,7 +1,8 @@
 from flask.ext.wtf import Form, RecaptchaField
-from wtforms import BooleanField, StringField, TextField, PasswordField, validators
-from wtforms.validators import DataRequired,InputRequired, Email
+from wtforms import BooleanField, StringField, TextField, PasswordField, validators, DecimalField, IntegerField, SelectField,TextAreaField, SubmitField
+from wtforms.validators import DataRequired,InputRequired, Email, NumberRange
 from wtforms.fields.html5 import EmailField  
+from wtforms.widgets import TextArea
 from flask.ext.login import current_user
 from app.models import User
 from app import db
@@ -102,6 +103,31 @@ class RegistrationForm(Form):
       		return False
       	else:
       		return True
+      		
+class AddProdForm(Form):
+	MAX_P_NUM = 500
+	
+	p_name = TextField('Product Name', [validators.Required(), validators.Length(min=3, max = 25, message='Number of characters between 3 ~ 25')])
+	p_price = DecimalField('Price', [validators.Required()], places=2, rounding=None)
+	p_descr = StringField('Description', [validators.Length(max=990, message='Description can be no longer than 990 chars')], widget=TextArea())
+	p_picture = StringField('Image url')
+	#p_num_size = IntegerField('Number of Sizes')
+	p_size = SelectField(u'Size', choices=[(1, '30mL'),(2, '40mL'),(3, '50mL')],coerce=int)
+	p_stock = IntegerField('Stock', [validators.Required(), validators.NumberRange(min=0, max=MAX_P_NUM, message='Range between 0 ~ 500')])
+	
+	def validate(self):
+		if not Form.validate(self):
+			return False
+
+class ContactForm(Form):
+  name = TextField("Name",  [validators.Required()])
+  email = EmailField('Email Address', [validators.Required(), validators.Email()])
+  subject = TextField("Subject",  [validators.Required()])
+  message = TextAreaField("Message",  [validators.Required()])
+
+	
+	
+	
 	
       		
 

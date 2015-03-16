@@ -62,11 +62,14 @@ class Products(db.Model):
 	
 	
 	id = db.Column(db.Integer, primary_key=True)
-	p_name = db.Column(db.String(140), index=True)
-	p_price = db.Column(db.Integer)
+	p_name = db.Column(db.String(50), index=True)
+	p_descr = db.Column(db.String(1000))
+	p_price = db.Column(db.Float)
 	p_picture = db.Column(db.String(1000))
+	p_size = db.Column(db.Integer)
+	p_stock = db.Column(db.Integer)
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-	
+		
 	def __repr__(self):
 		return '<Product %r>' % (self.p_name)
 		
